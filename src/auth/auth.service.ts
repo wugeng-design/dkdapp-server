@@ -5,6 +5,7 @@ import { JwtService } from '@nestjs/jwt';
 import { UserService } from '../user/user.service';
 import { User } from '../user/user.schema';
 import { SmsService } from './sms.service';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class AuthService {
@@ -80,5 +81,45 @@ export class AuthService {
 
   async validateUser(userId: string): Promise<User | null> {
     return this.userService.findOneById(userId);
+  }
+
+  async loginWithPassword(username: string, password: string): Promise<{ user: User; accessToken: string }> {
+    const user = await this.userService.findOneByUsername(username);
+    
+    if (!user) {
+      throw new UnauthorizedException('用户不存在');
+    }
+    
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+    
+    if (!isPasswordValid) {
+      throw new UnauthorizedException('密码错误');
+    }
+    
+    const accessToken = this.jwtService.sign({ userId: user._id });
+    
+    return { user, accessToken };
+  }
+
+  async registerWithPassword(phone: string, username: string, password: string, nickname: string): Promise<{ user: User; accessToken: string }> {
+    const existingUserByPhone = await this.userService.findOneByPhone(phone);
+    
+    if (existingUserByPhone) {
+      throw new ConflictException('该手机号已注册');
+    }
+    
+    const existingUserByUsername = await this.userService.findOneByUsername(username);
+    
+    if (existingUserByUsername) {
+      throw new ConflictException('该用户名已被使用');
+    }
+    
+    const hashedPassword = await bcrypt.hash(password, 10);
+    
+    const user = await this.userService.create({ phone, username, password: hashedPassword, nickname });
+    
+    const accessToken = this.jwtService.sign({ userId: user._id });
+    
+    return { user, accessToken };
   }
 }

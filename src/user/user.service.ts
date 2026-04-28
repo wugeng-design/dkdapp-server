@@ -18,6 +18,10 @@ export class UserService {
     return this.userModel.findOne({ phone }).exec();
   }
 
+  async findOneByUsername(username: string): Promise<User | null> {
+    return this.userModel.findOne({ username }).exec();
+  }
+
   async findOneById(id: string): Promise<User | null> {
     return this.userModel.findById(id).exec();
   }

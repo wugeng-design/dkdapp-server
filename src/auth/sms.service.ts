@@ -29,12 +29,12 @@ export class SmsService {
     }
 
     try {
-      const request: SendSmsRequest = {
+      const request = {
         phoneNumbers: phone,
         signName: this.signName,
         templateCode: this.templateCode,
         templateParam: JSON.stringify({ code }),
-      };
+      } as SendSmsRequest;
 
       const response = await this.smsClient.sendSms(request);
       
