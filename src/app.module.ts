@@ -13,9 +13,8 @@ import { ConfigModule } from '@nestjs/config';
     }),
     MongooseModule.forRoot(process.env.MONGODB_URI || 'mongodb://localhost:27017/dkdapp'),
     RedisModule.forRoot({
-      config: {
-        url: process.env.REDIS_URL || 'redis://localhost:6379',
-      },
+      type: 'single',
+      url: process.env.REDIS_URL || 'redis://localhost:6379',
     }),
     JwtModule.register({
       secret: process.env.JWT_SECRET || 'dkdapp_jwt_secret',
