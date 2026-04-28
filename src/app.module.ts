@@ -4,6 +4,8 @@ import { RedisModule } from '@nestjs-modules/ioredis';
 import { JwtModule } from '@nestjs/jwt';
 import { UserModule } from './user/user.module';
 import { AuthModule } from './auth/auth.module';
+import { FigureModule } from './figure/figure.module';
+import { SectModule } from './sect/sect.module';
 import { ConfigModule } from '@nestjs/config';
 
 @Module({
@@ -22,6 +24,8 @@ import { ConfigModule } from '@nestjs/config';
     }),
     UserModule,
     AuthModule,
+    FigureModule,
+    SectModule,
   ],
 })
 export class AppModule {}
