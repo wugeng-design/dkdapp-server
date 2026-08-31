@@ -4,6 +4,7 @@ import { Redis } from 'ioredis';
 import { JwtService } from '@nestjs/jwt';
 import { UserService } from '../user/user.service';
 import { User } from '../user/user.schema';
+import { SmsService } from './sms.service';
 
 @Injectable()
 export class AuthService {
@@ -11,6 +12,7 @@ export class AuthService {
     @InjectRedis() private readonly redisClient: Redis,
     private readonly jwtService: JwtService,
     private readonly userService: UserService,
+    private readonly smsService: SmsService,
   ) {}
 
   async sendVerificationCode(phone: string): Promise<boolean> {
@@ -23,9 +25,7 @@ export class AuthService {
       300,
     );
     
-    console.log(`验证码发送到 ${phone}: ${code}`);
-    
-    return true;
+    return await this.smsService.sendVerificationCode(phone, code);
   }
 
   private generateVerificationCode(): string {
